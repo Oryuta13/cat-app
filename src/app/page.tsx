@@ -1,7 +1,17 @@
 "use client";
 
+import { useState } from "react";
+
+interface SearchCatImage {
+  id: string
+  url: string
+  width: number
+  height: number
+}
+
 export default function Home() {
-  const fetchCatImage = async () => {
+  const [catImageUrl, setCatImageUrl] = useState("")
+  const fetchCatImage = async (): Promise<SearchCatImage> => {
     const res = await fetch('https://api.thecatapi.com/v1/images/search')
     const result = await res.json()
     // console.log(result[0])
@@ -10,9 +20,7 @@ export default function Home() {
 
   const handleClick = async () => {
     const catImage = await fetchCatImage()
-    // console.log(catImage.alt)
-    const catImageUrl = catImage.url
-    console.log(catImageUrl)
+    setCatImageUrl(catImage.url)
   }
 
   return (
@@ -20,7 +28,7 @@ export default function Home() {
       <h1 className="text-2xl font-bold">猫画像アプリ</h1>
 
       <img
-          src="https://cdn2.thecatapi.com/images/9m.gif"
+          src={catImageUrl}
           className="w-[800px]"
       />
       <button
