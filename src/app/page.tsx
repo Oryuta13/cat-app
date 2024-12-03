@@ -1,5 +1,4 @@
-"use client";
-
+import { GetServerSideProps } from "next";
 import { useState } from "react";
 
 interface SearchCatImage {
@@ -9,14 +8,19 @@ interface SearchCatImage {
   height: number
 }
 
-export default function Home() {
-  const [catImageUrl, setCatImageUrl] = useState("")
-  const fetchCatImage = async (): Promise<SearchCatImage> => {
+interface IndexPageProps {
+  initialCatImageUrl: string
+}
+
+const fetchCatImage = async (): Promise<SearchCatImage> => {
     const res = await fetch('https://api.thecatapi.com/v1/images/search')
     const result = await res.json()
     // console.log(result[0])
     return result[0]
   }
+
+export default function Home({ initialCatImageUrl }: IndexPageProps) {
+  const [catImageUrl, setCatImageUrl] = useState(initialCatImageUrl)
 
   const handleClick = async () => {
     const catImage = await fetchCatImage()
@@ -41,3 +45,13 @@ export default function Home() {
     </div>
   );
 }
+  // SSR
+  export const getServerSideProps: GetServerSideProps<IndexPageProps> = async () => {
+    const catImage = await fetchCatImage()
+    return {
+      props: {
+        initialCatImageUrl: catImage.url
+      },
+    }
+  };
+
